@@ -45,3 +45,14 @@ body {
   animation: fadeIn 0.6s ease-out 0.2s forwards;
   opacity: 0;
 }
+
+@keyframes pulseRing {
+  0%, 100% { opacity: 0; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.05); }
+}
+
+.animate-pulse-ring {
+  animation: pulseRing 3s ease-in-out infinite;
+  border: 1px solid rgba(201, 169, 110, 0.15);
+  border-radius: 9999px;
+}
