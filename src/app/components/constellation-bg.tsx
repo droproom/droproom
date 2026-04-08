@@ -30,7 +30,7 @@ export function ConstellationBg() {
   const branchAnglesRef = useRef<number[]>([]) // base angle for each of the 6 branches
 
   // --- Tuning knobs ---
-  const DOT_INTERVAL = 900       // ms between growth ticks (all 6 branches grow each tick)
+  const DOT_INTERVAL = 1800      // ms between growth ticks (halved speed)
   const MAX_DOTS = 200
   const DOT_SIZE = 3.5
   const LINE_WIDTH = 1
@@ -83,7 +83,7 @@ export function ConstellationBg() {
         for (let j = 0; j < SUB_BRANCHES; j++) {
           const subAngle = baseAngle + (j / (SUB_BRANCHES - 1) - 0.5) * FAN_SPREAD
           const baseDist = 80 + Math.random() * 60 // 80–140px
-          const subDist = layer === 0 ? baseDist * 2 : baseDist // double for first layer
+          const subDist = layer === 0 ? baseDist * 2 : baseDist
           const sub: Dot = {
             id: nextDotIdRef.current++,
             x: parent.x + Math.cos(subAngle) * subDist,
@@ -124,7 +124,7 @@ export function ConstellationBg() {
       for (let i = 0; i < ORIGIN_BRANCHES; i++) {
         const angle = (i / ORIGIN_BRANCHES) * Math.PI * 2
         branchAnglesRef.current.push(angle)
-        const distance = 244 + Math.random() * 140 // doubled
+        const distance = 122 + Math.random() * 70 // halved
         const spoke: Dot = {
           id: nextDotIdRef.current++,
           x: origin.x + Math.cos(angle) * distance,
@@ -306,12 +306,21 @@ export function ConstellationBg() {
     }
 
     let initialized = false
+    let startTime = 0
 
     const animate = (currentTime: number) => {
       ctx.fillStyle = '#0a0a0a'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-      // Seed origin on first frame
+      if (startTime === 0) startTime = currentTime
+
+      // Wait 1 second before starting
+      if (currentTime - startTime < 1000) {
+        animationFrameRef.current = requestAnimationFrame(animate)
+        return
+      }
+
+      // Seed origin after 1s delay
       if (!initialized) {
         seedOrigin(currentTime)
         lastDotTimeRef.current = currentTime
