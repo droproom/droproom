@@ -30,13 +30,13 @@ export function ConstellationBg() {
   const branchAnglesRef = useRef<number[]>([]) // base angle for each of the 6 branches
 
   // --- Tuning knobs ---
-  const DOT_INTERVAL = 1800      // ms between growth ticks (halved speed)
+  const DOT_INTERVAL = 2000      // ms between growth ticks (all 6 branches grow each tick)
   const MAX_DOTS = 200
   const DOT_SIZE = 3.5
   const LINE_WIDTH = 1
   const GLOW_BLUR = 15
-  const PULSE_DURATION = 800
-  const LINE_DRAW_DURATION = 600
+  const PULSE_DURATION = 1200
+  const LINE_DRAW_DURATION = 1500
   const MAX_CHILDREN = 2          // max branches per dot
 
   useEffect(() => {
@@ -53,6 +53,9 @@ export function ConstellationBg() {
 
     resizeCanvas()
     window.addEventListener('resize', resizeCanvas)
+
+    // Scale all distances proportionally to screen size (baseline: 900px)
+    const screenScale = Math.min(canvas.width, canvas.height) / 900
 
     // How many initial branches radiate from origin
     const ORIGIN_BRANCHES = 6
@@ -82,15 +85,15 @@ export function ConstellationBg() {
         const subs: Dot[] = []
         for (let j = 0; j < SUB_BRANCHES; j++) {
           const subAngle = baseAngle + (j / (SUB_BRANCHES - 1) - 0.5) * FAN_SPREAD
-          const baseDist = 80 + Math.random() * 60 // 80–140px
-          const subDist = layer === 0 ? baseDist * 2 : baseDist
+          const baseDist = (80 + Math.random() * 60) * screenScale // 80–140px scaled
+          const subDist = layer === 0 ? baseDist * 2 : baseDist // double for first layer
           const sub: Dot = {
             id: nextDotIdRef.current++,
             x: parent.x + Math.cos(subAngle) * subDist,
             y: parent.y + Math.sin(subAngle) * subDist,
             opacity: 0,
             scale: 0,
-            createdAt: timeOffset + (j + 1) * 150,
+            createdAt: timeOffset + (j + 1) * 400,
             children: 0,
             branch: branchIdx,
           }
@@ -124,14 +127,14 @@ export function ConstellationBg() {
       for (let i = 0; i < ORIGIN_BRANCHES; i++) {
         const angle = (i / ORIGIN_BRANCHES) * Math.PI * 2
         branchAnglesRef.current.push(angle)
-        const distance = 122 + Math.random() * 70 // halved
+        const distance = (244 + Math.random() * 140) * screenScale
         const spoke: Dot = {
           id: nextDotIdRef.current++,
           x: origin.x + Math.cos(angle) * distance,
           y: origin.y + Math.sin(angle) * distance,
           opacity: 0,
           scale: 0,
-          createdAt: currentTime + i * 200,
+          createdAt: currentTime + i * 500,
           children: 0,
           branch: i,
         }
@@ -143,7 +146,7 @@ export function ConstellationBg() {
         let currentParent = spoke
         let layerTime = currentTime + i * 200
         for (let layer = 0; layer < LAYERS; layer++) {
-          layerTime += SUB_BRANCHES * 150
+          layerTime += SUB_BRANCHES * 400
           const subs = spawnLayer(currentParent, angle, i, layerTime, layer)
           if (subs.length === 0) break
           // Pick the child most aligned with the branch direction to continue
@@ -153,11 +156,11 @@ export function ConstellationBg() {
     }
 
     const pickDistance = (): number => {
-      return 80 + Math.random() * 80 // 80–160px
+      return (80 + Math.random() * 80) * screenScale // 80–160px scaled
     }
 
     // Check if a position is too close to any existing dot
-    const MIN_DOT_SPACING = 55
+    const MIN_DOT_SPACING = 55 * screenScale
     const isTooClose = (x: number, y: number): boolean => {
       for (const dot of dotsRef.current) {
         const dx = dot.x - x
@@ -314,13 +317,13 @@ export function ConstellationBg() {
 
       if (startTime === 0) startTime = currentTime
 
-      // Wait 1 second before starting
-      if (currentTime - startTime < 1000) {
+      // Wait 1.5 seconds before starting
+      if (currentTime - startTime < 1500) {
         animationFrameRef.current = requestAnimationFrame(animate)
         return
       }
 
-      // Seed origin after 1s delay
+      // Seed origin after 1.5s delay
       if (!initialized) {
         seedOrigin(currentTime)
         lastDotTimeRef.current = currentTime
