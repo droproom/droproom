@@ -7,6 +7,8 @@ import { generateSlug } from '@/lib/utils'
 
 export type AuthState = {
   error?: string
+  success?: boolean
+  redirect?: string
 }
 
 export async function signup(
@@ -54,16 +56,19 @@ export async function signup(
     return { error: 'That brand name is already taken. Please pick a different name.' }
   }
 
-  // Create auth user
-  const supabase = await createClient()
-  const { data: authData, error: authError } = await supabase.auth.signUp({
+  // Create auth user (admin API auto-confirms email)
+  const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
     email,
     password,
+    email_confirm: true,
   })
 
   if (authError || !authData.user) {
     return { error: authError?.message || 'Failed to create account.' }
   }
+
+  // Sign in immediately
+  const supabase = await createClient()
 
   // Insert brand row
   const { error: brandError } = await supabaseAdmin
@@ -88,7 +93,7 @@ export async function signup(
   // Sign in immediately
   await supabase.auth.signInWithPassword({ email, password })
 
-  redirect('/dashboard')
+  return { success: true, redirect: '/dashboard' }
 }
 
 export async function login(
@@ -120,10 +125,10 @@ export async function login(
     .single()
 
   if (brand?.is_owner) {
-    redirect('/owner')
+    return { success: true, redirect: '/owner' }
   }
 
-  redirect('/dashboard')
+  return { success: true, redirect: '/dashboard' }
 }
 
 export async function logout() {

@@ -51,11 +51,20 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-border bg-surface p-5 mb-4">
-        <p className="text-xs text-muted uppercase tracking-widest mb-2">Your Page</p>
-        <p className="text-sm text-gold font-mono">
-          /{brand.slug}
-        </p>
+      <div className="rounded-lg border border-border bg-surface p-5 mb-4 flex items-center justify-between">
+        <div>
+          <p className="text-xs text-muted uppercase tracking-widest mb-2">Your Page</p>
+          <p className="text-sm text-gold font-mono">
+            /{brand.slug}
+          </p>
+        </div>
+        <Link
+          href={`/${brand.slug}`}
+          target="_blank"
+          className="inline-flex items-center gap-2 rounded-md border border-gold text-gold px-4 py-2 text-xs uppercase tracking-widest hover:bg-gold hover:text-black transition-colors"
+        >
+          View Page
+        </Link>
       </div>
 
       <div className="mb-6">

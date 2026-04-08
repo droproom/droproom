@@ -1,6 +1,7 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { login, type AuthState } from '@/app/actions/auth'
 import { Input } from '@/app/components/ui/input'
 import { Button } from '@/app/components/ui/button'
@@ -10,6 +11,13 @@ const initialState: AuthState = {}
 
 export function LoginForm() {
   const [state, formAction, pending] = useActionState(login, initialState)
+  const router = useRouter()
+
+  useEffect(() => {
+    if (state.success && state.redirect) {
+      router.push(state.redirect)
+    }
+  }, [state, router])
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
