@@ -21,7 +21,8 @@ export function generateCode(length: number = 8): string {
   return code
 }
 
-export function getExpirationDate(duration: '24h' | '48h' | '7d'): Date {
+export function getExpirationDate(duration: '24h' | '48h' | '7d' | '30d' | 'forever'): Date | null {
+  if (duration === 'forever') return null
   const now = new Date()
   switch (duration) {
     case '24h':
@@ -30,5 +31,7 @@ export function getExpirationDate(duration: '24h' | '48h' | '7d'): Date {
       return new Date(now.getTime() + 48 * 60 * 60 * 1000)
     case '7d':
       return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+    case '30d':
+      return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
   }
 }

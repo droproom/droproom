@@ -6,9 +6,9 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 import { generateCode, getExpirationDate } from '@/lib/utils'
 
 export async function generateViewerCode(formData: FormData) {
-  const duration = formData.get('duration') as '24h' | '48h' | '7d'
+  const duration = formData.get('duration') as '24h' | '48h' | '7d' | '30d' | 'forever'
 
-  if (!duration || !['24h', '48h', '7d'].includes(duration)) {
+  if (!duration || !['24h', '48h', '7d', '30d', 'forever'].includes(duration)) {
     return { error: 'Invalid duration' }
   }
 
@@ -32,7 +32,7 @@ export async function generateViewerCode(formData: FormData) {
   const { error } = await supabaseAdmin.from('viewer_codes').insert({
     brand_id: brand.id,
     code,
-    expires_at: expiresAt.toISOString(),
+    expires_at: expiresAt ? expiresAt.toISOString() : null,
   })
 
   if (error) return { error: error.message }

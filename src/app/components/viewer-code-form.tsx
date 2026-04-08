@@ -9,7 +9,7 @@ export function ViewerCodeForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  async function handleGenerate(duration: '24h' | '48h' | '7d') {
+  async function handleGenerate(duration: '24h' | '48h' | '7d' | '30d' | 'forever') {
     setLoading(true)
     setError('')
     setGeneratedCode(null)
@@ -42,6 +42,12 @@ export function ViewerCodeForm() {
         </Button>
         <Button variant="outline" onClick={() => handleGenerate('7d')} disabled={loading}>
           7 Days
+        </Button>
+        <Button variant="outline" onClick={() => handleGenerate('30d')} disabled={loading}>
+          30 Days
+        </Button>
+        <Button variant="outline" onClick={() => handleGenerate('forever')} disabled={loading}>
+          Forever
         </Button>
       </div>
 

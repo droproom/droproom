@@ -5,7 +5,7 @@ import type { ViewerCode } from '@/lib/types'
 
 function getStatus(code: ViewerCode): { label: string; color: string } {
   if (code.revoked) return { label: 'Revoked', color: 'text-red-400' }
-  if (new Date(code.expires_at) < new Date()) return { label: 'Expired', color: 'text-muted' }
+  if (code.expires_at && new Date(code.expires_at) < new Date()) return { label: 'Expired', color: 'text-muted' }
   return { label: 'Active', color: 'text-green-400' }
 }
 
@@ -29,7 +29,7 @@ export function ViewerCodeList({ codes }: { codes: ViewerCode[] }) {
     <div className="flex flex-col gap-3">
       {codes.map((code) => {
         const status = getStatus(code)
-        const isActive = !code.revoked && new Date(code.expires_at) > new Date()
+        const isActive = !code.revoked && (!code.expires_at || new Date(code.expires_at) > new Date())
 
         return (
           <div
@@ -39,7 +39,7 @@ export function ViewerCodeList({ codes }: { codes: ViewerCode[] }) {
             <div>
               <p className="font-mono text-sm tracking-[0.15em]">{code.code}</p>
               <p className="text-xs text-muted mt-0.5">
-                Expires {formatExpiry(code.expires_at)}
+                {code.expires_at ? `Expires ${formatExpiry(code.expires_at)}` : 'Never expires'}
               </p>
             </div>
             <div className="flex items-center gap-3">

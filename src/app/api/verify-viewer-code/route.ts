@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'This code has been revoked' }, { status: 401 })
   }
 
-  if (new Date(viewerCode.expires_at) < new Date()) {
+  if (viewerCode.expires_at && new Date(viewerCode.expires_at) < new Date()) {
     return NextResponse.json({ error: 'This code has expired' }, { status: 401 })
   }
 
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
 
   // Set session cookie scoped to this brand
   const cookieStore = await cookies()
-  const expiresAt = new Date(viewerCode.expires_at)
+  const expiresAt = viewerCode.expires_at ? new Date(viewerCode.expires_at) : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
 
   cookieStore.set(`viewer_session_${slug}`, viewerCode.id, {
     expires: expiresAt,

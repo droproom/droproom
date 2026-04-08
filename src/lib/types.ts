@@ -34,7 +34,7 @@ export type ViewerCode = {
   id: string
   brand_id: string
   code: string
-  expires_at: string
+  expires_at: string | null
   revoked: boolean
   created_at: string
 }

@@ -26,7 +26,7 @@ export async function GET(
   if (
     !viewerCode ||
     viewerCode.revoked ||
-    new Date(viewerCode.expires_at) < new Date()
+    (viewerCode.expires_at && new Date(viewerCode.expires_at) < new Date())
   ) {
     // Clear invalid cookie
     cookieStore.delete(`viewer_session_${slug}`)
